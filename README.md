@@ -1,10 +1,6 @@
-# demo-electron-react
+# Sulzer Demo App
 
-An Electron application with React and TypeScript
-
-## Recommended IDE Setup
-
-- [VSCode](https://code.visualstudio.com/) + [ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) + [Prettier](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode)
+> :mailbox_with_no_mail: A demo application with electron and react
 
 ## Project Setup
 

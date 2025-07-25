@@ -1,4 +1,4 @@
-appId: com.electron.app
+appId: de.sulzer.demo.app
 productName: demo-electron-react
 directories:
   buildResources: build
@@ -12,7 +12,7 @@ files:
 asarUnpack:
   - resources/**
 win:
-  executableName: demo-electron-react
+  executableName: sulzer-demo-app
 nsis:
   artifactName: ${name}-${version}-setup.${ext}
   shortcutName: ${productName}
