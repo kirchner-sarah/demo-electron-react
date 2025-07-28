@@ -1,0 +1,43 @@
+name: Print Environment Variables
+on:
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: 'Branch from which prints the environment'
+        required: true
+        default: 'main'
+
+
+
+jobs:
+  print-info:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        os: [Linux, Windows, macOS]
+        arch: [x64, arm64]
+
+    steps:
+      - name: Print runner.os
+        run: |
+          echo "Runner OS: ${{ runner.os }}"
+
+      - name: Print matrix.os and matrix.arch
+        run: |
+          echo "Matrix OS: ${{ matrix.os }}"
+          echo "Matrix Arch: ${{ matrix.arch }}"
+
+      - name: Export and reuse
+        run: |
+          echo "runner_os=${{ runner.os }}" >> $GITHUB_ENV
+          echo "matrix_os=${{ matrix.os }}" >> $GITHUB_ENV
+          echo "matrix_arch=${{ matrix.arch }}" >> $GITHUB_ENV
+
+      - name: Reuse values from environment variables
+        run: |
+          echo "Runner OS: $runner_os"
+          echo "Matrix OS: $matrix_os"
+          echo "Matrix Arch: $matrix_arch"
+
+      - name: Show all environment variables
+        run: env
