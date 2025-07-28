@@ -1,0 +1,126 @@
+name: Build and Release Electron App
+
+# Enables manual start of the workflow with user input
+on:
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: 'Branch from which the release build is to be created' # User selects the branch
+        required: true
+        default: 'main'
+      tag:
+        description: 'Day on which the release is to be made (e.g., v2025.12-Alpha.0)'
+        required: true
+        default: 'v1.0.0'
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        arch: [x64, arm64]
+      fail-fast: false
+
+    steps:
+      # 1. Check out the specified branch
+      - name: Checkout code from branch
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.inputs.branch }} # Branch comes from the input
+
+      # 2. Set up Node.js
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 22
+          cache: "npm"
+
+      # 3. Install dependencies using npm
+      - name: Install dependencies
+        run: npm install
+
+      # 4. Install additional tools on Linux (for arm64 builds)
+      - name: Install additional libraries on Linux
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libx11-dev libx11-xcb-dev libxcb-icccm4-dev libxkbcommon-x11-dev
+
+      # 5. Add macOS architecture flag for M1 builds
+      - name: Set up architecture for macOS arm64
+        if: runner.os == 'macOS' && matrix.arch == 'arm64'
+        run: |
+          sudo softwareupdate --install-rosetta --agree-to-license || true
+          export npm_config_arch=arm64
+          export ELECTRON_BUILD_ENV="arm64"
+
+      # 6. Build the app using electron-vite's CLI
+      - name: Build Electron App
+        run: |
+          if [[ "${{ matrix.os }}" == "Windows"* ]]; then
+            npm run build -- --win --${{ matrix.arch }}
+          elif [[ "${{ matrix.os }}" == "macOS"* ]]; then
+            npm run build -- --mac --${{ matrix.arch }}
+          else
+            npm run build -- --linux --${{ matrix.arch }}
+          fi
+
+      # 7. Compress build artifacts
+      - name: Compress build artifacts
+        run: |
+          zip -r electron-app-${{ matrix.os }}-${{ matrix.arch }}.zip dist/
+        working-directory: .
+
+      # 8. Upload build artifacts to be used in the release process
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: electron-app-${{ matrix.os }}-${{ matrix.arch }}
+          path: electron-app-${{ matrix.os }}-${{ matrix.arch }}.zip
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Checkout the repository
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # 2. Download build artifacts
+      - name: Download build artifacts
+        uses: actions/download-artifact@v3
+
+      # 3. Create GitHub Tag
+      - name: Create Git Tag
+        run: |
+          git config user.name "${{ github.actor }}"
+          git config user.email "${{ github.actor }}@users.noreply.github.com"
+          git tag ${{ github.event.inputs.tag }}
+          git push origin ${{ github.event.inputs.tag }}
+
+      # 4. Create GitHub Release with user attribution
+      - name: Create GitHub Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.event.inputs.tag }}
+          release_name: Release ${{ github.event.inputs.tag }}
+          body: "Release erstellt von @${{ github.actor }}"
+          draft: false
+          prerelease: false
+
+      # 5. Upload all build artifacts to the release
+      - name: Upload Release Assets
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./electron-app-${{ matrix.os }}-${{ matrix.arch }}.zip
+          asset_name: electron-app-${{ matrix.os }}-${{ matrix.arch }}.zip
+          asset_content_type: application/zip
