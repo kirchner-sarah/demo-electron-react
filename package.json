@@ -1,10 +1,10 @@
 {
-  "name": "sulzer-demo-app",
+  "name": "demo-electron-react",
   "version": "1.0.0-Alpha.0",
   "description": "An Electron application with React and TypeScript",
   "main": "./out/main/index.js",
-  "author": "Sarah Kirchner <sarah.kirchner@sulzer.de>",
-  "homepage": "https://www.sulzer.de",
+  "author": "demo <demo@example.com>",
+  "homepage": "https://www.demo.com",
   "scripts": {
     "format": "prettier --write .",
     "lint": "eslint --cache .",

@@ -1,5 +1,6 @@
-appId: de.sulzer.demo.app
-productName: demo-electron-react
+appId: com.demo.app
+name: demo
+productName: demo-app
 directories:
   buildResources: build
 files:
@@ -12,7 +13,7 @@ files:
 asarUnpack:
   - resources/**
 win:
-  executableName: sulzer-demo-app
+  executableName: demo-app
 nsis:
   artifactName: ${name}-${version}-setup.${ext}
   shortcutName: ${productName}
@@ -34,7 +35,7 @@ linux:
     - snap
     - deb
   maintainer: electronjs.org
-  category: Utility
+  category: Demo
 appImage:
   artifactName: ${name}-${version}.${ext}
 npmRebuild: false
