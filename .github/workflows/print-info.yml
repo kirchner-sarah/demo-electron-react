@@ -11,21 +11,17 @@ on:
 
 jobs:
   print-info:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
-        target: [linux, windows, macos]
         arch: [x64, arm64]
 
     steps:
-      - name: Print runner.os
-        run: |
-          echo "Runner OS: ${{ runner.os }}"
 
       - name: Print matrix.os and matrix.arch
         run: |
           echo "Matrix OS: ${{ matrix.os }}"
-          echo "Matrix Target: ${{ matrix.target }}"
+          echo "Runner: ${{ runner.os }} => ${{ runner.arch }}"
           echo "Matrix Arch: ${{ matrix.arch }}"
 
