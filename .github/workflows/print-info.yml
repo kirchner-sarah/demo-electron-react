@@ -14,7 +14,8 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        os: [linux, windows, macos]
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        target: [linux, windows, macos]
         arch: [x64, arm64]
 
     steps:
@@ -25,19 +26,6 @@ jobs:
       - name: Print matrix.os and matrix.arch
         run: |
           echo "Matrix OS: ${{ matrix.os }}"
+          echo "Matrix Target: ${{ matrix.target }}"
           echo "Matrix Arch: ${{ matrix.arch }}"
 
-      - name: Export and reuse
-        run: |
-          echo "runner_os=${{ runner.os }}" >> $GITHUB_ENV
-          echo "matrix_os=${{ matrix.os }}" >> $GITHUB_ENV
-          echo "matrix_arch=${{ matrix.arch }}" >> $GITHUB_ENV
-
-      - name: Reuse values from environment variables
-        run: |
-          echo "Runner OS: $runner_os"
-          echo "Matrix OS: $matrix_os"
-          echo "Matrix Arch: $matrix_arch"
-
-      - name: Show all environment variables
-        run: env
