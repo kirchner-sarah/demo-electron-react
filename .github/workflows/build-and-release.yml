@@ -19,12 +19,12 @@ jobs:
 
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
+        os: [macos-latest, windows-latest]
         arch: [x64, arm64]
       fail-fast: false
 
     steps:
-      # 0. Pront matrix
+      # 0. Print matrix
       - name: Print matrix and Runner
         run: |
           echo "Matrix: ${{ matrix.os }} => ${{ matrix.arch }}"
@@ -47,14 +47,7 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      # 4. Install additional tools on Linux (for arm64 builds)
-      - name: Install additional libraries on Linux
-        if: runner.os == 'Linux'
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libx11-dev libx11-xcb-dev libxcb-icccm4-dev libxkbcommon-x11-dev
-
-      # 5. Add macOS architecture flag for M1 builds
+      # 4. Add macOS architecture flag for M1 builds
       - name: Set up architecture for macOS arm64
         if: runner.os == 'macOS' && matrix.arch == 'arm64'
         run: |
@@ -62,21 +55,7 @@ jobs:
           export npm_config_arch=arm64
           export ELECTRON_BUILD_ENV="arm64"
 
-      # 6. Build Applications
-      - name: Build Linux x64
-        if: matrix.os == 'ubuntu-latest' && matrix.arch == 'x64'
-        env:
-          APP_VERSION: ${{ github.event.inputs.tag }}
-          OS_SHORT: ${{ runner.os }}
-        run: npm run build:linux:x64
-
-      - name: Build Linux arm64
-        if: matrix.os == 'ubuntu-latest' && matrix.arch == 'arm64'
-        env:
-          APP_VERSION: ${{ github.event.inputs.tag }}
-          OS_SHORT: ${{ runner.os }}
-        run: npm run build:linux:arm64
-
+      # 5. Build Applications
       - name: Build MacOS x64
         if: matrix.os == 'macos-latest' && matrix.arch == 'x64'
         env:
@@ -115,11 +94,10 @@ jobs:
   release:
     needs: build
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        os: [Windows, macOS, Linux]
-        arch: [x64, arm64]
-      fail-fast: false
+    env:
+      OS_MAPPING: |
+        macos-latest=macOS
+        windows-latest=Windows
 
     steps:
       # 1. Checkout the repository
@@ -137,6 +115,13 @@ jobs:
           git config user.email "${{ github.actor }}@users.noreply.github.com"
           git tag ${{ github.event.inputs.tag }}
           git push origin ${{ github.event.inputs.tag }}
+
+      - name: Set OS environment variable
+        id: set_os
+        run: |
+          # Extrahiere den benutzerfreundlichen Namen basierend auf matrix.os
+          OS_NAME=$(echo "${OS_MAPPING}" | grep "${{ matrix.os }}" | cut -d'=' -f2)
+          echo "OS_NAME=${OS_NAME}" >> $GITHUB_ENV
 
       # 4. Create GitHub Release with user attribution
       - name: Create GitHub Release
@@ -156,8 +141,10 @@ jobs:
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          macos-latest: macOS
+          windows-latest: Windows
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./demo-app-${{ matrix.os }}-${{ matrix.arch }}-${{ github.event.inputs.tag }}.zip
-          asset_name: demo-app-${{ matrix.os }}-${{ matrix.arch }}-${{ github.event.inputs.tag }}.zip
+          asset_path: ./demo-app-${{ env.OS_NAME }}-${{ matrix.arch }}-${{ github.event.inputs.tag }}.zip
+          asset_name: demo-app-${{ env.OS_NAME }}-${{ matrix.arch }}-${{ github.event.inputs.tag }}.zip
           asset_content_type: application/zip
