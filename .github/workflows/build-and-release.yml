@@ -56,29 +56,49 @@ jobs:
           export npm_config_arch=arm64
           export ELECTRON_BUILD_ENV="arm64"
 
-      # 6. Build the app using electron-vite's CLI
-      - name: Build Electron App
-        run: |
-          if [[ "${{ matrix.os }}" == "Windows"* ]]; then
-            npm run build -- --win --${{ matrix.arch }}
-          elif [[ "${{ matrix.os }}" == "macOS"* ]]; then
-            npm run build -- --mac --${{ matrix.arch }}
-          else
-            npm run build -- --linux --${{ matrix.arch }}
-          fi
+      # 6. Build Applications
+      - name: Build Linux x64
+        if: matrix.os == 'ubuntu-latest' && martix.arch == 'x64'
+        env:
+          APP_VERSION: ${{ github.event.inputs.tag }}
+        run: npm run build:linux:x64
 
-      # 7. Compress build artifacts
-      - name: Compress build artifacts
-        run: |
-          zip -r electron-app-${{ matrix.os }}-${{ matrix.arch }}.zip dist/
-        working-directory: .
+      - name: Build Linux arm64
+        if: matrix.os == 'ubuntu-latest' && martix.arch == 'arm64'
+        env:
+          APP_VERSION: ${{ github.event.inputs.tag }}
+        run: npm run build:linux:arm64
 
-      # 8. Upload build artifacts to be used in the release process
+      - name: Build MacOS x64
+        if: matrix.os == 'macos-latest' && martix.arch == 'x64'
+        env:
+          APP_VERSION: ${{ github.event.inputs.tag }}
+        run: npm run build:macos:x64
+
+      - name: Build MacOS arm64
+        if: matrix.os == 'macos-latest' && martix.arch == 'arm64'
+        env:
+          APP_VERSION: ${{ github.event.inputs.tag }}
+        run: npm run build:macos:arm64
+
+      - name: Build Windows x64
+        if: matrix.os == 'windows-latest' && martix.arch == 'x64'
+        env:
+          APP_VERSION: ${{ github.event.inputs.tag }}
+        run: npm run build:windows:x64
+
+      - name: Build Windows arm64
+        if: matrix.os == 'windows-latest' && martix.arch == 'arm64'
+        env:
+          APP_VERSION: ${{ github.event.inputs.tag }}
+        run: npm run build:windows:arm64
+
+      # 7. Upload build artifacts to be used in the release process
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: electron-app-${{ matrix.os }}-${{ matrix.arch }}
-          path: electron-app-${{ matrix.os }}-${{ matrix.arch }}.zip
+          name: demo-app-${{ matrix.os }}-${{ matrix.arch }}-${{ github.event.inputs.tag }}
+          path: demo-app-${{ matrix.os }}-${{ matrix.arch }}-${{ github.event.inputs.tag }}.zip
 
   release:
     needs: build
@@ -121,6 +141,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./electron-app-${{ matrix.os }}-${{ matrix.arch }}.zip
-          asset_name: electron-app-${{ matrix.os }}-${{ matrix.arch }}.zip
+          asset_path: ./demo-app-${{ matrix.os }}-${{ matrix.arch }}-${{ github.event.inputs.tag }}.zip
+          asset_name: demo-app-${{ matrix.os }}-${{ matrix.arch }}-${{ github.event.inputs.tag }}.zip
           asset_content_type: application/zip

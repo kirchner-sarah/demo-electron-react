@@ -1,5 +1,4 @@
 appId: com.demo.app
-name: demo
 productName: demo-app
 directories:
   buildResources: build
@@ -14,8 +13,11 @@ asarUnpack:
   - resources/**
 win:
   executableName: demo-app
+  target:
+    - zip
+  artifactName: ${name}-${arch}-${env.APP_VERSION}.${ext}
 nsis:
-  artifactName: ${name}-${version}-setup.${ext}
+  artifactName: ${name}-${arch}-${env.APP_VERSION}-setup.${ext}
   shortcutName: ${productName}
   uninstallDisplayName: ${productName}
   createDesktopShortcut: always
@@ -27,17 +29,17 @@ mac:
     - NSDocumentsFolderUsageDescription: Application requests access to the user's Documents folder.
     - NSDownloadsFolderUsageDescription: Application requests access to the user's Downloads folder.
   notarize: false
-dmg:
-  artifactName: ${name}-${version}.${ext}
+  target:
+    - zip
+  artifactName: ${name}-${arch}-${env.APP_VERSION}.${ext}
 linux:
   target:
-    - AppImage
-    - snap
-    - deb
-  maintainer: electronjs.org
+    - zip
+  maintainer: example.com
+  artifactName: ${name}-${arch}-${env.APP_VERSION}.${ext}
   category: Demo
 appImage:
-  artifactName: ${name}-${version}.${ext}
+  artifactName: ${name}-${arch}-${env.APP_VERSION}.${ext}
 npmRebuild: false
 publish:
   provider: generic

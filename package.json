@@ -1,6 +1,6 @@
 {
-  "name": "demo-electron-react",
-  "version": "1.0.0-Alpha.0",
+  "name": "demo-app",
+  "version": "1.0.0",
   "description": "An Electron application with React and TypeScript",
   "main": "./out/main/index.js",
   "author": "demo <demo@example.com>",
@@ -16,9 +16,12 @@
     "build": "npm run typecheck && electron-vite build",
     "postinstall": "electron-builder install-app-deps",
     "build:unpack": "npm run build && electron-builder --dir",
-    "build:win": "npm run build && electron-builder --win",
-    "build:mac": "electron-vite build && electron-builder --mac",
-    "build:linux": "electron-vite build && electron-builder --linux"
+    "build:windows:x64": "npm run build && electron-builder --win --x64",
+    "build:windows:arm64": "npm run build && electron-builder --win --arm64",
+    "build:macos:x64": "electron-vite build && electron-builder --mac --x64",
+    "build:macos:arm64": "electron-vite build && electron-builder --mac --arm64",
+    "build:linux:x64": "electron-vite build && electron-builder --linux --x64",
+    "build:linux:arm64": "electron-vite build && electron-builder --linux --arm64"
   },
   "dependencies": {
     "@electron-toolkit/preload": "^3.0.2",
