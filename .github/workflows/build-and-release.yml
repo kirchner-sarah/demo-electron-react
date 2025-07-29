@@ -58,37 +58,37 @@ jobs:
 
       # 6. Build Applications
       - name: Build Linux x64
-        if: matrix.os == 'ubuntu-latest' && martix.arch == 'x64'
+        if: matrix.os == 'ubuntu-latest' && matrix.arch == 'x64'
         env:
           APP_VERSION: ${{ github.event.inputs.tag }}
         run: npm run build:linux:x64
 
       - name: Build Linux arm64
-        if: matrix.os == 'ubuntu-latest' && martix.arch == 'arm64'
+        if: matrix.os == 'ubuntu-latest' && matrix.arch == 'arm64'
         env:
           APP_VERSION: ${{ github.event.inputs.tag }}
         run: npm run build:linux:arm64
 
       - name: Build MacOS x64
-        if: matrix.os == 'macos-latest' && martix.arch == 'x64'
+        if: matrix.os == 'macos-latest' && matrix.arch == 'x64'
         env:
           APP_VERSION: ${{ github.event.inputs.tag }}
         run: npm run build:macos:x64
 
       - name: Build MacOS arm64
-        if: matrix.os == 'macos-latest' && martix.arch == 'arm64'
+        if: matrix.os == 'macos-latest' && matrix.arch == 'arm64'
         env:
           APP_VERSION: ${{ github.event.inputs.tag }}
         run: npm run build:macos:arm64
 
       - name: Build Windows x64
-        if: matrix.os == 'windows-latest' && martix.arch == 'x64'
+        if: matrix.os == 'windows-latest' && matrix.arch == 'x64'
         env:
           APP_VERSION: ${{ github.event.inputs.tag }}
         run: npm run build:windows:x64
 
       - name: Build Windows arm64
-        if: matrix.os == 'windows-latest' && martix.arch == 'arm64'
+        if: matrix.os == 'windows-latest' && matrix.arch == 'arm64'
         env:
           APP_VERSION: ${{ github.event.inputs.tag }}
         run: npm run build:windows:arm64
