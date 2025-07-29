@@ -91,60 +91,61 @@ jobs:
           name: demo-app-${{ runner.os }}-${{ matrix.arch }}-${{ github.event.inputs.tag }}
           path: dist/demo-app-${{ runner.os }}-${{ matrix.arch }}-${{ github.event.inputs.tag }}.zip
 
-  release:
-    needs: build
-    runs-on: ubuntu-latest
-    env:
-      OS_MAPPING: |
-        macos-latest=macOS
-        windows-latest=Windows
-
-    steps:
-      # 1. Checkout the repository
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      # 2. Download build artifacts
-      - name: Download build artifacts
-        uses: actions/download-artifact@v4
-
-      # 3. Create GitHub Tag
-      - name: Create Git Tag
-        run: |
-          git config user.name "${{ github.actor }}"
-          git config user.email "${{ github.actor }}@users.noreply.github.com"
-          git tag ${{ github.event.inputs.tag }}
-          git push origin ${{ github.event.inputs.tag }}
-
-      - name: Set OS environment variable
-        id: set_os
-        run: |
-          # Extrahiere den benutzerfreundlichen Namen basierend auf matrix.os
-          OS_NAME=$(echo "${OS_MAPPING}" | grep "${{ matrix.os }}" | cut -d'=' -f2)
-          echo "OS_NAME=${OS_NAME}" >> $GITHUB_ENV
-
-      # 4. Create GitHub Release with user attribution
-      - name: Create GitHub Release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ github.event.inputs.tag }}
-          release_name: Release ${{ github.event.inputs.tag }}
-          body: "Release erstellt von @${{ github.actor }}"
-          draft: false
-          prerelease: false
-
-      # 5. Upload all build artifacts to the release
-      - name: Upload Release Assets
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          macos-latest: macOS
-          windows-latest: Windows
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./demo-app-${{ env.OS_NAME }}-${{ matrix.arch }}-${{ github.event.inputs.tag }}.zip
-          asset_name: demo-app-${{ env.OS_NAME }}-${{ matrix.arch }}-${{ github.event.inputs.tag }}.zip
-          asset_content_type: application/zip
+# TODO Release failed.
+#  release:
+#    needs: build
+#    runs-on: ubuntu-latest
+#    env:
+#      OS_MAPPING: |
+#        macos-latest=macOS
+#        windows-latest=Windows
+#
+#    steps:
+#      # 1. Checkout the repository
+#      - name: Checkout repository
+#        uses: actions/checkout@v3
+#
+#      # 2. Download build artifacts
+#      - name: Download build artifacts
+#        uses: actions/download-artifact@v4
+#
+#      # 3. Create GitHub Tag
+#      - name: Create Git Tag
+#        run: |
+#          git config user.name "${{ github.actor }}"
+#          git config user.email "${{ github.actor }}@users.noreply.github.com"
+#          git tag ${{ github.event.inputs.tag }}
+#          git push origin ${{ github.event.inputs.tag }}
+#
+#      - name: Set OS environment variable
+#        id: set_os
+#        run: |
+#          # Extrahiere den benutzerfreundlichen Namen basierend auf matrix.os
+#          OS_NAME=$(echo "${OS_MAPPING}" | grep "${{ matrix.os }}" | cut -d'=' -f2)
+#          echo "OS_NAME=${OS_NAME}" >> $GITHUB_ENV
+#
+#      # 4. Create GitHub Release with user attribution
+#      - name: Create GitHub Release
+#        id: create_release
+#        uses: actions/create-release@v1
+#        env:
+#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#        with:
+#          tag_name: ${{ github.event.inputs.tag }}
+#          release_name: Release ${{ github.event.inputs.tag }}
+#          body: "Release erstellt von @${{ github.actor }}"
+#          draft: false
+#          prerelease: false
+#
+#      # 5. Upload all build artifacts to the release
+#      - name: Upload Release Assets
+#        uses: actions/upload-release-asset@v1
+#        env:
+#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#          macos-latest: macOS
+#          windows-latest: Windows
+#        with:
+#          upload_url: ${{ steps.create_release.outputs.upload_url }}
+#          asset_path: ./demo-app-${{ env.OS_NAME }}-${{ matrix.arch }}-${{ github.event.inputs.tag }}.zip
+#          asset_name: demo-app-${{ env.OS_NAME }}-${{ matrix.arch }}-${{ github.event.inputs.tag }}.zip
+#          asset_content_type: application/zip
