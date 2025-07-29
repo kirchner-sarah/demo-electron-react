@@ -115,6 +115,11 @@ jobs:
   release:
     needs: build
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        os: [Windows, macOS, Linux]
+        arch: [x64, arm64]
+      fail-fast: false
 
     steps:
       # 1. Checkout the repository
@@ -153,6 +158,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./demo-app-${{ runner.os }}-${{ matrix.arch }}-${{ github.event.inputs.tag }}.zip
-          asset_name: demo-app-${{ runner.os }}-${{ matrix.arch }}-${{ github.event.inputs.tag }}.zip
+          asset_path: ./demo-app-${{ matrix.os }}-${{ matrix.arch }}-${{ github.event.inputs.tag }}.zip
+          asset_name: demo-app-${{ matrix.os }}-${{ matrix.arch }}-${{ github.event.inputs.tag }}.zip
           asset_content_type: application/zip
