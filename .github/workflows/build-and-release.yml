@@ -24,6 +24,12 @@ jobs:
       fail-fast: false
 
     steps:
+      # 0. Pront matrix
+      - name: Print matrix and Runner
+        run: |
+          echo "Matrix: ${{ matrix.os }} => ${{ matrix.arch }}"
+          echo "Runner: ${{ runner.os }} => ${{ runner.arch }}"
+
       # 1. Check out the specified branch
       - name: Checkout code from branch
         uses: actions/checkout@v3
@@ -61,44 +67,50 @@ jobs:
         if: matrix.os == 'ubuntu-latest' && matrix.arch == 'x64'
         env:
           APP_VERSION: ${{ github.event.inputs.tag }}
+          OS_SHORT: ${{ runner.os }}
         run: npm run build:linux:x64
 
       - name: Build Linux arm64
         if: matrix.os == 'ubuntu-latest' && matrix.arch == 'arm64'
         env:
           APP_VERSION: ${{ github.event.inputs.tag }}
+          OS_SHORT: ${{ runner.os }}
         run: npm run build:linux:arm64
 
       - name: Build MacOS x64
         if: matrix.os == 'macos-latest' && matrix.arch == 'x64'
         env:
           APP_VERSION: ${{ github.event.inputs.tag }}
+          OS_SHORT: ${{ runner.os }}
         run: npm run build:macos:x64
 
       - name: Build MacOS arm64
         if: matrix.os == 'macos-latest' && matrix.arch == 'arm64'
         env:
           APP_VERSION: ${{ github.event.inputs.tag }}
+          OS_SHORT: ${{ runner.os }}
         run: npm run build:macos:arm64
 
       - name: Build Windows x64
         if: matrix.os == 'windows-latest' && matrix.arch == 'x64'
         env:
           APP_VERSION: ${{ github.event.inputs.tag }}
+          OS_SHORT: ${{ runner.os }}
         run: npm run build:windows:x64
 
       - name: Build Windows arm64
         if: matrix.os == 'windows-latest' && matrix.arch == 'arm64'
         env:
           APP_VERSION: ${{ github.event.inputs.tag }}
+          OS_SHORT: ${{ runner.os }}
         run: npm run build:windows:arm64
 
       # 7. Upload build artifacts to be used in the release process
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: demo-app-${{ matrix.os }}-${{ matrix.arch }}-${{ github.event.inputs.tag }}
-          path: demo-app-${{ matrix.os }}-${{ matrix.arch }}-${{ github.event.inputs.tag }}.zip
+          name: demo-app-${{ runner.os }}-${{ matrix.arch }}-${{ github.event.inputs.tag }}
+          path: demo-app-${{ runner.os }}-${{ matrix.arch }}-${{ github.event.inputs.tag }}.zip
 
   release:
     needs: build
@@ -141,6 +153,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./demo-app-${{ matrix.os }}-${{ matrix.arch }}-${{ github.event.inputs.tag }}.zip
-          asset_name: demo-app-${{ matrix.os }}-${{ matrix.arch }}-${{ github.event.inputs.tag }}.zip
+          asset_path: ./demo-app-${{ runner.os }}-${{ matrix.arch }}-${{ github.event.inputs.tag }}.zip
+          asset_name: demo-app-${{ runner.os }}-${{ matrix.arch }}-${{ github.event.inputs.tag }}.zip
           asset_content_type: application/zip

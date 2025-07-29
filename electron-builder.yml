@@ -15,9 +15,9 @@ win:
   executableName: demo-app
   target:
     - zip
-  artifactName: ${name}-${arch}-${env.APP_VERSION}.${ext}
+  artifactName: ${name}-${env.OS_SHORT}-${arch}-${env.APP_VERSION}.${ext}
 nsis:
-  artifactName: ${name}-${arch}-${env.APP_VERSION}-setup.${ext}
+  artifactName: ${name}-${env.OS_SHORT}-${arch}-${env.APP_VERSION}-setup.${ext}
   shortcutName: ${productName}
   uninstallDisplayName: ${productName}
   createDesktopShortcut: always
@@ -31,15 +31,15 @@ mac:
   notarize: false
   target:
     - zip
-  artifactName: ${name}-${arch}-${env.APP_VERSION}.${ext}
+  artifactName: ${name}-${env.OS_SHORT}-${arch}-${env.APP_VERSION}.${ext}
 linux:
   target:
     - zip
   maintainer: example.com
-  artifactName: ${name}-${arch}-${env.APP_VERSION}.${ext}
+  artifactName: ${name}-${env.OS_SHORT}-${arch}-${env.APP_VERSION}.${ext}
   category: Demo
 appImage:
-  artifactName: ${name}-${arch}-${env.APP_VERSION}.${ext}
+  artifactName: ${name}-${env.OS_SHORT}-${arch}-${env.APP_VERSION}.${ext}
 npmRebuild: false
 publish:
   provider: generic
