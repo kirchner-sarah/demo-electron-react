@@ -110,7 +110,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: demo-app-${{ runner.os }}-${{ matrix.arch }}-${{ github.event.inputs.tag }}
-          path: demo-app-${{ runner.os }}-${{ matrix.arch }}-${{ github.event.inputs.tag }}.zip
+          path: dist/demo-app-${{ runner.os }}-${{ matrix.arch }}-${{ github.event.inputs.tag }}.zip
 
   release:
     needs: build
