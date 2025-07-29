@@ -1,35 +1,15 @@
-import Versions from './components/Versions'
-import electronLogo from './assets/electron.svg'
+import React from 'react'
 
-function App(): React.JSX.Element {
+export const App: React.FC = (): React.JSX.Element => {
   const ipcHandle = (): void => window.electron.ipcRenderer.send('ping')
 
   return (
-    <>
-      <img alt="logo" className="logo" src={electronLogo} />
-      <div className="creator">Powered by electron-vite</div>
-      <div className="text">
-        Build an Electron app with <span className="react">React</span>
-        &nbsp;and <span className="ts">TypeScript</span>
-      </div>
-      <p className="tip">
-        Please try pressing <code>F12</code> to open the devTool
-      </p>
-      <div className="actions">
-        <div className="action">
-          <a href="https://electron-vite.org/" target="_blank" rel="noreferrer">
-            Documentation
-          </a>
-        </div>
-        <div className="action">
-          <a target="_blank" rel="noreferrer" onClick={ipcHandle}>
-            Send IPC
-          </a>
-        </div>
-      </div>
-      <Versions></Versions>
-    </>
+    <div className="bg-black text-white h-screen flex flex-col items-center justify-center">
+      <h1 className="text-2xl font-bold tracking-wide hover:bg-gray-500 p-2 cursor-pointer">Hello</h1>
+      <p>Test</p>
+      <button onClick={ipcHandle} className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4">
+        Ping
+      </button>
+    </div>
   )
 }
-
-export default App
